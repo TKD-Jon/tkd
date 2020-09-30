@@ -1,72 +1,61 @@
 <template>
-  <div class="container">
-    <div>
-      <logo />
-      <h1 class="title">
-        nuxtjs
-      </h1>
-      <h2 class="subtitle">
-        My astonishing Nuxt.js project
-      </h2>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+<div class="bg-black text-white font-helN">
+    <site-header />
+
+    <div class="h-screen w-screen z-0 overflow-hidden relative">
+        <img v-bind:src="hero.bg" class="absolute w-screen left-0 z-0" alt="" />
+        <gradient />
+        <div class="absolute z-50 w-screen flex justify-center bottom-0">
+            <div class="container pb-16">
+                <div v-html="hero.tagline" class="tagline container mx-auto text-white font-helN text-6xl" />
+                <div class="tagline text-white font-prox text-6xl -mt-12"><span>...</span></div>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <bio />
+</div>
 </template>
 
 <script>
-import Logo from '~/components/Logo.vue'
+import SiteHeader from "~/components/SiteHeader.vue";
+import Gradient from "~/components/home/Gradient.vue";
+import Bio from "~/components/home/Bio.vue";
 
 export default {
-  components: {
-    Logo
-  }
-}
+    components: {
+        SiteHeader,
+        Gradient,
+        Bio,
+    },
+
+    mounted() {
+        fetch(`${process.env.get_singletons}/home`, {
+                headers: {
+                    "Cockpit-Token": process.env.token,
+                },
+            })
+            .then((response) => response.json())
+            .then((result) => {
+                this.hero.bg = process.env.cockpit + result.hero.bg.path;
+                this.hero.tagline = result.hero.tagline;
+            });
+    },
+
+    data: function () {
+        return {
+            hero: {
+                bg: "",
+                tagline: "",
+            },
+        };
+    },
+};
 </script>
 
 <style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.title {
-  font-family: 'Quicksand', 'Source Sans Pro', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
-}
-
-.links {
-  padding-top: 15px;
+.tagline em {
+    font-style: normal;
+    color: var(--color-pri);
 }
 </style>
